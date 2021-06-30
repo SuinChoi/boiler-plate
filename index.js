@@ -29,13 +29,14 @@ app.post('/register', (req, res)=> {
 
     // Get sign up information from Client
     // And then add it on DB
-        const user = new User(req.body)
-        user.save((err, dov)=>{
-            if(err) return res.json({success:false, err})
-            return res.status(200).json({
-                success:true
-            })
+    const user = new User(req.body)
+
+    user.save((err, userInfo)=>{
+        if(err) return res.json({success:false, err})
+        return res.status(200).json({
+            success:true
         })
+    })
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

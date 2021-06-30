@@ -1,4 +1,7 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt');
+const { networkInterfaces } = require('os');
+const saltRounds = 10
 
 const userSchema = mongoose.Schema({        //스키마생성
     name:{
@@ -30,6 +33,31 @@ const userSchema = mongoose.Schema({        //스키마생성
         type: Number
     }
 
+})
+
+
+// Before saving User information
+userSchema.pre('save', function(next){   
+    var user = this;
+   
+    // Only when user modify the password
+    if(user.isModified('password')){      
+        // Hash a password 
+        // 비밀번호 암호화
+        bcrypt.genSalt(saltRounds, function(err, salt){            
+            if(err) return next(err)
+
+            bcrypt.hash(user.password, salt, function(err, hash){
+                if(err) return next(err)
+
+                user.password=hash
+                next()
+            })
+        })
+        }
+        else{
+            next()
+    }   
 })
 
 const User = mongoose.model('User', userSchema) //모델생성->스키마 감싸주는것
